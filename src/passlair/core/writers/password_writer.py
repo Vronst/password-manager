@@ -21,7 +21,6 @@ class PasswordWriter(BaseRepository):
 
         with db.session() as session:
             session.add(entry)
-            session.commit()
 
         logger.info(
             "save_password: saved entry for service=%r, user_id=%r",

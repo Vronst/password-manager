@@ -4,6 +4,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 from sqlalchemy.exc import SQLAlchemyError
 
+from tests.unit.core.conftest import build_mock_db_session
+
 from passlair.core.crypto import encrypt
 from passlair.core.models.vault_entry import VaultEntry
 from passlair.core.writers.password_writer import PasswordWriter
@@ -30,29 +32,23 @@ def make_import_entry(
 
 
 def patch_db_for_query(existing: list[VaultEntry]) -> tuple[MagicMock, MagicMock]:
-    """Returns (db_patcher_target_value, mock_session) for save_passwords tests:
-    a mock `db` whose `session()` context manager yields a session whose
+    """Returns (mock_db, mock_session) for save_passwords tests: a mock `db`
+    whose `session()` context manager yields a session whose
     `query(...).filter_by(...).filter(...).all()` returns `existing`."""
-    mock_session = MagicMock()
+    mock_db, mock_session = build_mock_db_session()
     mock_session.query.return_value.filter_by.return_value.filter.return_value.all.return_value = (  # noqa: E501
         existing
     )
-    mock_db = MagicMock()
-    mock_db.session.return_value.__enter__.return_value = mock_session
-    mock_db.session.return_value.__exit__.return_value = False
     return mock_db, mock_session
 
 
 def patch_db_for_first(found: VaultEntry | None) -> tuple[MagicMock, MagicMock]:
     """Like patch_db_for_query, but the `query(...).filter_by(...).filter(...)
     .first()` chain returns `found` -- used by delete_password."""
-    mock_session = MagicMock()
+    mock_db, mock_session = build_mock_db_session()
     mock_session.query.return_value.filter_by.return_value.filter.return_value.first.return_value = (  # noqa: E501
         found
     )
-    mock_db = MagicMock()
-    mock_db.session.return_value.__enter__.return_value = mock_session
-    mock_db.session.return_value.__exit__.return_value = False
     return mock_db, mock_session
 
 

@@ -58,7 +58,6 @@ class UserWriter(BaseRepository):
 
         with db.session() as session:
             session.add(user)
-            session.commit()
 
         logger.info("change_password: password changed for user_id=%r", user.id)
 
@@ -97,7 +96,6 @@ class UserWriter(BaseRepository):
 
         with db.session() as session:
             session.add(user)
-            session.commit()
 
         logger.info("reset_password: reset via backup phrase for user_id=%r", user.id)
         return new_phrase
@@ -148,7 +146,6 @@ class UserWriter(BaseRepository):
         try:
             with db.session() as session:
                 session.add(entry)
-                session.commit()
         except IntegrityError as e:
             if is_unique_violation(e):
                 match violation_names(e, "username", "email"):

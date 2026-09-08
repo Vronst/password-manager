@@ -23,6 +23,10 @@ class DatabaseManager:
         self._engine: None | Engine = None
         self._session_factory: None | scoped_session[Session] = None
 
+    @property
+    def session_factory(self) -> scoped_session[Session] | None:
+        return self._session_factory
+
     def _reinit_check(self, force: bool = False) -> bool:
         if not self._engine:
             return True
